@@ -11,6 +11,8 @@ jobs:
         include:
           - example: examples/singleended
             boards: "--board=uno --board=teensy31 --board=due"
+          - example: examples/continuous
+            boards: "--board=uno --board=teensy31 --board=due"
           - example: examples/softi2c-acewire
             lib-deps: "bxparks/AceWire @ 0.4.1"
             boards: "--board=uno --board=teensy31 --board=due"
