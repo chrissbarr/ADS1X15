@@ -10,12 +10,12 @@ jobs:
       matrix:
         include:
           - example: examples/singleended
-            boards: "--board=uno --board=teensy31 --board=due"
+            boards: "--board=uno --board=teensy31 --board=due --board=esp32dev"
           - example: examples/continuous
-            boards: "--board=uno --board=teensy31 --board=due"
+            boards: "--board=uno --board=teensy31 --board=due --board=esp32dev"
           - example: examples/softi2c-acewire
             lib-deps: "bxparks/AceWire @ 0.4.1"
-            boards: "--board=uno --board=teensy31 --board=due"
+            boards: "--board=uno --board=teensy31 --board=due --board=esp32dev"
           - example: examples/softi2c-softwarewire
             lib-deps: "testato/SoftwareWire@1.6.0"
             boards: "--board=uno"
