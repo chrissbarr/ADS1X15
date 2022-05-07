@@ -49,6 +49,12 @@ enum class RegisterAddress : uint8_t {
   HITHRESH    = 0x03
 };
 
+enum class DifferentialPair : uint16_t {
+  PAIR_01 = 0x0000,   ///< Differential P = AIN0, N = AIN1 (default)
+  PAIR_03 = 0x1000,   ///< Differential P = AIN0, N = AIN3
+  PAIR_13 = 0x2000,   ///< Differential P = AIN1, N = AIN3
+  PAIR_23 = 0x3000    ///< Differential P = AIN2, N = AIN3
+};
 
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_MASK = 0x8000; ///< OS Mask
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_SINGLE = 0x8000; ///< Write: Set to start a single-conversion
@@ -56,10 +62,6 @@ constexpr uint16_t ADS1X15_REG_CONFIG_OS_BUSY = 0x0000; ///< Read: Bit = 0 when 
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_NOTBUSY = 0x8000; ///< Read: Bit = 1 when device is not performing a conversion
 
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_MASK = 0x7000; ///< Mux Mask
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_1 = 0x0000; ///< Differential P = AIN0, N = AIN1 (default)
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_3 = 0x1000; ///< Differential P = AIN0, N = AIN3
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_1_3 = 0x2000; ///< Differential P = AIN1, N = AIN3
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_2_3 = 0x3000; ///< Differential P = AIN2, N = AIN3
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_0 = 0x4000; ///< Single-ended AIN0
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_1 = 0x5000; ///< Single-ended AIN1
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_2 = 0x6000; ///< Single-ended AIN2
@@ -123,6 +125,17 @@ public:
     if (channel > 3) { return 0; }
 
     startADCReading(MUX_BY_CHANNEL[channel], /*continuous=*/false);
+
+    // Wait for the conversion to complete
+    while (!conversionComplete());
+
+    // Read the conversion results
+    return getLastConversionResults();
+  }
+
+  int16_t readADCDifferential(DifferentialPair pair)
+  {
+    startADCReading(static_cast<uint16_t>(pair), /*continuous=*/false);
 
     // Wait for the conversion to complete
     while (!conversionComplete());
