@@ -1,0 +1,48 @@
+name: PlatformIO CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - example: examples/singleended
+            boards: "--board=uno --board=teensy31 --board=due"
+          - example: examples/softi2c-acewire
+            lib-deps: "bxparks/AceWire @ 0.4.1"
+            boards: "--board=uno --board=teensy31 --board=due"
+          - example: examples/softi2c-softwarewire
+            lib-deps: "testato/SoftwareWire@1.6.0"
+            boards: "--board=uno"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Cache PlatformIO
+      uses: actions/cache@v2
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade platformio
+
+    - name: Run PlatformIO
+      run: pio ci --lib="." $BOARDS --project-option="lib_deps=$LIB_DEPS"
+      env:
+        PLATFORMIO_CI_SRC: ${{ matrix.example }}
+        BOARDS: ${{ matrix.boards }}
+        LIB_DEPS: ${{ matrix.lib-deps }}
