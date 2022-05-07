@@ -230,12 +230,13 @@ private:
     buffer[0] = static_cast<uint8_t>(reg);
     buffer[1] = value >> 8;
     buffer[2] = value & 0xFF;
-    mWire.write(buffer, 3);
+    mWire.write(buffer[0]);
+    mWire.write(buffer[1]);
+    mWire.write(buffer[2]);
   }
 
   uint16_t readRegister(RegisterAddress reg) {
-    buffer[0] = static_cast<uint8_t>(reg);
-    mWire.write(buffer, 1);
+    mWire.write(static_cast<uint8_t>(reg));
     buffer[0] = mWire.read();
     buffer[1] = mWire.read();
     return ((buffer[0] << 8) | buffer[1]);
