@@ -49,20 +49,20 @@ enum class RegisterAddress : uint8_t {
   HITHRESH    = 0x03
 };
 
-constexpr uint16_t ADS1X15_REG_CONFIG_OS_MASK = 0x8000; ///< OS Mask
+constexpr uint16_t ADS1X15_REG_CONFIG_OS_MASK = 0x8000;   ///< OS Mask
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_SINGLE = 0x8000; ///< Write: Set to start a single-conversion
-constexpr uint16_t ADS1X15_REG_CONFIG_OS_BUSY = 0x0000; ///< Read: Bit = 0 when conversion is in progress
+constexpr uint16_t ADS1X15_REG_CONFIG_OS_BUSY = 0x0000;   ///< Read: Bit = 0 when conversion is in progress
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_NOTBUSY = 0x8000; ///< Read: Bit = 1 when device is not performing a conversion
 
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_MASK = 0x7000; ///< Mux Mask
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_1 = 0x0000; ///< Differential P = AIN0, N = AIN1 (default)
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_3 = 0x1000; ///< Differential P = AIN0, N = AIN3
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_1_3 = 0x2000; ///< Differential P = AIN1, N = AIN3
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_2_3 = 0x3000; ///< Differential P = AIN2, N = AIN3
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_0 = 0x4000; ///< Single-ended AIN0
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_1 = 0x5000; ///< Single-ended AIN1
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_2 = 0x6000; ///< Single-ended AIN2
-constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_3 = 0x7000; ///< Single-ended AIN3
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_MASK = 0x7000;      ///< Mux Mask
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_1 = 0x0000;  ///< Differential P = AIN0, N = AIN1 (default)
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_3 = 0x1000;  ///< Differential P = AIN0, N = AIN3
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_1_3 = 0x2000;  ///< Differential P = AIN1, N = AIN3
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_2_3 = 0x3000;  ///< Differential P = AIN2, N = AIN3
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_0 = 0x4000;  ///< Single-ended AIN0
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_1 = 0x5000;  ///< Single-ended AIN1
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_2 = 0x6000;  ///< Single-ended AIN2
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_3 = 0x7000;  ///< Single-ended AIN3
 
 constexpr uint16_t MUX_BY_CHANNEL[] = {
     ADS1X15_REG_CONFIG_MUX_SINGLE_0, ///< Single-ended AIN0
@@ -84,23 +84,23 @@ constexpr uint16_t ADS1X15_REG_CONFIG_MODE_SINGLE = 0x0100; ///< Power-down sing
 
 constexpr uint16_t ADS1X15_REG_CONFIG_RATE_MASK = 0x00E0; ///< Data Rate Mask
 
-constexpr uint16_t ADS1X15_REG_CONFIG_CMODE_MASK = 0x0010; ///< CMode Mask
-constexpr uint16_t ADS1X15_REG_CONFIG_CMODE_TRAD = 0x0000; ///< Traditional comparator with hysteresis (default)
-constexpr uint16_t ADS1X15_REG_CONFIG_CMODE_WINDOW = 0x0010; ///< Window comparator
+constexpr uint16_t ADS1X15_REG_CONFIG_CMODE_MASK = 0x0010;    ///< CMode Mask
+constexpr uint16_t ADS1X15_REG_CONFIG_CMODE_TRAD = 0x0000;    ///< Traditional comparator with hysteresis (default)
+constexpr uint16_t ADS1X15_REG_CONFIG_CMODE_WINDOW = 0x0010;  ///< Window comparator
 
-constexpr uint16_t ADS1X15_REG_CONFIG_CPOL_MASK = 0x0008; ///< CPol Mask
-constexpr uint16_t ADS1X15_REG_CONFIG_CPOL_ACTVLOW = 0x0000; ///< ALERT/RDY pin is low when active (default)
-constexpr uint16_t ADS1X15_REG_CONFIG_CPOL_ACTVHI = 0x0008; ///< ALERT/RDY pin is high when active
+constexpr uint16_t ADS1X15_REG_CONFIG_CPOL_MASK = 0x0008;     ///< CPol Mask
+constexpr uint16_t ADS1X15_REG_CONFIG_CPOL_ACTVLOW = 0x0000;  ///< ALERT/RDY pin is low when active (default)
+constexpr uint16_t ADS1X15_REG_CONFIG_CPOL_ACTVHI = 0x0008;   ///< ALERT/RDY pin is high when active
 
-constexpr uint16_t ADS1X15_REG_CONFIG_CLAT_MASK = 0x0004; ///< Determines if ALERT/RDY pin latches once asserted
+constexpr uint16_t ADS1X15_REG_CONFIG_CLAT_MASK = 0x0004;   ///< Determines if ALERT/RDY pin latches once asserted
 constexpr uint16_t ADS1X15_REG_CONFIG_CLAT_NONLAT = 0x0000; ///< Non-latching comparator (default)
-constexpr uint16_t ADS1X15_REG_CONFIG_CLAT_LATCH = 0x0004; ///< Latching comparator
+constexpr uint16_t ADS1X15_REG_CONFIG_CLAT_LATCH = 0x0004;  ///< Latching comparator
 
-constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_MASK = 0x0003; ///< CQue Mask
-constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_1CONV = 0x0000; ///< Assert ALERT/RDY after one conversions
-constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_2CONV = 0x0001; ///< Assert ALERT/RDY after two conversions
-constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_4CONV = 0x0002; ///< Assert ALERT/RDY after four conversions
-constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_NONE = 0x0003; ///< Disable the comparator and put ALERT/RDY in high state (default)
+constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_MASK = 0x0003;   ///< CQue Mask
+constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_1CONV = 0x0000;  ///< Assert ALERT/RDY after one conversions
+constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_2CONV = 0x0001;  ///< Assert ALERT/RDY after two conversions
+constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_4CONV = 0x0002;  ///< Assert ALERT/RDY after four conversions
+constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_NONE = 0x0003;   ///< Disable the comparator and put ALERT/RDY in high state (default)
 
 template <typename WIRE>
 class ADS1X15 {
@@ -220,7 +220,7 @@ public:
     // Read the conversion results
     uint16_t res = readRegister(RegisterAddress::CONVERSION) >> _bitshift;
     if (_bitshift == 0) {
-      return (int16_t)res;
+      return int16_t(res);
     } else {
       // Shift 12-bit results right 4 bits for the ADS1015,
       // making sure we keep the sign bit intact
@@ -228,7 +228,7 @@ public:
         // negative number - extend the sign to 16th bit
         res |= 0xF000;
       }
-      return (int16_t)res;
+      return int16_t(res);
     }
   }
 
@@ -275,20 +275,22 @@ private:
     buffer[0] = static_cast<uint8_t>(reg);
     buffer[1] = value >> 8;
     buffer[2] = value & 0xFF;
+    mWire.beginTransmission(_i2caddr);
     mWire.write(buffer[0]);
     mWire.write(buffer[1]);
     mWire.write(buffer[2]);
+    mWire.endTransmission();
   }
 
   uint16_t readRegister(RegisterAddress reg) {
+    mWire.beginTransmission(_i2caddr);
     mWire.write(static_cast<uint8_t>(reg));
+    mWire.endTransmission();
+    mWire.requestFrom(_i2caddr, uint8_t(2));
     buffer[0] = mWire.read();
     buffer[1] = mWire.read();
     return ((buffer[0] << 8) | buffer[1]);
   }
-
-
-
 };
 
 template <typename WIRE>
