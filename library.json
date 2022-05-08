@@ -6,7 +6,7 @@
     "repository":
     {
       "type": "git",
-      "url": "https://github.com/chrissbarr/PCAL9535A-Arduino-Library.git"
+      "url": "https://github.com/chrissbarr/ADS1X15.git"
     },
     "authors":
     [
@@ -18,7 +18,7 @@
       }
     ],
     "license": "GPL-3.0-or-later",
-    "homepage": "https://github.com/chrissbarr/PCAL9535A-Arduino-Library",
+    "homepage": "https://github.com/chrissbarr/ADS1X15",
     "dependencies": {},
     "frameworks": "arduino",
     "platforms": "*"
