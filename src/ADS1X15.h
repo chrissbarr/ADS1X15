@@ -49,19 +49,16 @@ enum class RegisterAddress : uint8_t {
   HITHRESH    = 0x03
 };
 
-enum class DifferentialPair : uint16_t {
-  PAIR_01 = 0x0000,   ///< Differential P = AIN0, N = AIN1 (default)
-  PAIR_03 = 0x1000,   ///< Differential P = AIN0, N = AIN3
-  PAIR_13 = 0x2000,   ///< Differential P = AIN1, N = AIN3
-  PAIR_23 = 0x3000    ///< Differential P = AIN2, N = AIN3
-};
-
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_MASK = 0x8000; ///< OS Mask
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_SINGLE = 0x8000; ///< Write: Set to start a single-conversion
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_BUSY = 0x0000; ///< Read: Bit = 0 when conversion is in progress
 constexpr uint16_t ADS1X15_REG_CONFIG_OS_NOTBUSY = 0x8000; ///< Read: Bit = 1 when device is not performing a conversion
 
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_MASK = 0x7000; ///< Mux Mask
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_1 = 0x0000; ///< Differential P = AIN0, N = AIN1 (default)
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_0_3 = 0x1000; ///< Differential P = AIN0, N = AIN3
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_1_3 = 0x2000; ///< Differential P = AIN1, N = AIN3
+constexpr uint16_t ADS1X15_REG_CONFIG_MUX_DIFF_2_3 = 0x3000; ///< Differential P = AIN2, N = AIN3
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_0 = 0x4000; ///< Single-ended AIN0
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_1 = 0x5000; ///< Single-ended AIN1
 constexpr uint16_t ADS1X15_REG_CONFIG_MUX_SINGLE_2 = 0x6000; ///< Single-ended AIN2
@@ -73,6 +70,13 @@ constexpr uint16_t MUX_BY_CHANNEL[] = {
     ADS1X15_REG_CONFIG_MUX_SINGLE_2, ///< Single-ended AIN2
     ADS1X15_REG_CONFIG_MUX_SINGLE_3  ///< Single-ended AIN3
 };                                   ///< MUX config by channel
+
+enum class DifferentialPair : uint16_t {
+  PAIR_01 = ADS1X15_REG_CONFIG_MUX_DIFF_0_1,   ///< Differential P = AIN0, N = AIN1 (default)
+  PAIR_03 = ADS1X15_REG_CONFIG_MUX_DIFF_0_3,   ///< Differential P = AIN0, N = AIN3
+  PAIR_13 = ADS1X15_REG_CONFIG_MUX_DIFF_1_3,   ///< Differential P = AIN1, N = AIN3
+  PAIR_23 = ADS1X15_REG_CONFIG_MUX_DIFF_2_3    ///< Differential P = AIN2, N = AIN3
+};
 
 constexpr uint16_t ADS1X15_REG_CONFIG_MODE_MASK = 0x0100;   ///< Mode Mask
 constexpr uint16_t ADS1X15_REG_CONFIG_MODE_CONTIN = 0x0000; ///< Continuous conversion mode
@@ -142,6 +146,34 @@ public:
 
     // Read the conversion results
     return getLastConversionResults();
+  }
+
+  void startComparatorSingleEnded(uint8_t channel, int16_t threshold)
+  {
+    // Start with default values
+    uint16_t config =
+        ADS1X15_REG_CONFIG_CQUE_1CONV |   // Comparator enabled and asserts on 1
+                                          // match
+        ADS1X15_REG_CONFIG_CLAT_LATCH |   // Latching mode
+        ADS1X15_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
+        ADS1X15_REG_CONFIG_CMODE_TRAD |   // Traditional comparator (default val)
+        ADS1X15_REG_CONFIG_MODE_CONTIN |  // Continuous conversion mode
+        ADS1X15_REG_CONFIG_MODE_CONTIN;   // Continuous conversion mode
+
+    // Set PGA/voltage range
+    config |= static_cast<uint16_t>(_gain);
+
+    // Set data rate
+    config |= static_cast<uint16_t>(_rate);
+
+    config |= MUX_BY_CHANNEL[channel];
+
+    // Set the high threshold register
+    // Shift 12-bit results left 4 bits for the ADS1015
+    writeRegister(RegisterAddress::HITHRESH, threshold << _bitshift);
+
+    // Write config register to the ADC
+    writeRegister(RegisterAddress::CONFIG, config);
   }
 
   void startADCReading(uint16_t mux, bool continuous)
@@ -280,8 +312,6 @@ public:
     this->_rate = Rate::ADS1115_128SPS;
   };
 };
-
-
 
 } // namespace _ADS1X15_H_
 

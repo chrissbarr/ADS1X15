@@ -12,11 +12,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - example: examples/singleended
+          - example: examples/comparator
+            boards: "--board=uno --board=teensy31 --board=due --board=esp32dev"
+          - example: examples/continuous
             boards: "--board=uno --board=teensy31 --board=due --board=esp32dev"
           - example: examples/differential
             boards: "--board=uno --board=teensy31 --board=due --board=esp32dev"
-          - example: examples/continuous
+          - example: examples/singleended
             boards: "--board=uno --board=teensy31 --board=due --board=esp32dev"
           - example: examples/softi2c-acewire
             lib-deps: "bxparks/AceWire @ 0.4.1"
