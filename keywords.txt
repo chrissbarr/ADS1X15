@@ -1,33 +1,30 @@
 #######################################
-# Syntax Coloring Map for PCAL9535A
+# Syntax Coloring Map for ADS1X15
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-PCAL9535A	KEYWORD1
+ADS1015	KEYWORD1
+ADS1115	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 begin	KEYWORD2
-writeGPIO	KEYWORD2
-writeGPIO16	KEYWORD2
-readGPIO16	KEYWORD2
-readGPIO	KEYWORD2
-pinMode	KEYWORD2
-digitalWrite	KEYWORD2
-digitalRead	KEYWORD2
-pinSetPull	KEYWORD2
-pinSetDriveStrength	KEYWORD2
-pinSetInputInversion	KEYWORD2
-pinSetInputLatch	KEYWORD2
-pinSetInterruptEnabled	KEYWORD2
-getLastInterruptPin	KEYWORD2
-getInterruptPinValue	KEYWORD2
-portSetOutputMode	KEYWORD2
+setGain	KEYWORD2
+getGain	KEYWORD2
+setDataRate	KEYWORD2
+getDataRate	KEYWORD2
+readADCSingleEnded	KEYWORD2
+readADCDifferential	KEYWORD2
+startComparatorSingleEnded	KEYWORD2
+startADCReading	KEYWORD2
+conversionComplete	KEYWORD2
+getLastConversionResults	KEYWORD2
+computeVolts	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
