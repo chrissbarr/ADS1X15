@@ -269,16 +269,12 @@ protected:
   Rate _rate;
 
 private:
-  uint8_t buffer[3];
 
   void writeRegister(RegisterAddress reg, uint16_t value) {
-    buffer[0] = static_cast<uint8_t>(reg);
-    buffer[1] = value >> 8;
-    buffer[2] = value & 0xFF;
     mWire.beginTransmission(_i2caddr);
-    mWire.write(buffer[0]);
-    mWire.write(buffer[1]);
-    mWire.write(buffer[2]);
+    mWire.write(static_cast<uint8_t>(reg));
+    mWire.write(value >> 8);
+    mWire.write(value & 0xFF);
     mWire.endTransmission();
   }
 
@@ -287,9 +283,7 @@ private:
     mWire.write(static_cast<uint8_t>(reg));
     mWire.endTransmission();
     mWire.requestFrom(_i2caddr, uint8_t(2));
-    buffer[0] = mWire.read();
-    buffer[1] = mWire.read();
-    return ((buffer[0] << 8) | buffer[1]);
+    return ((mWire.read() << 8) | mWire.read());
   }
 };
 
