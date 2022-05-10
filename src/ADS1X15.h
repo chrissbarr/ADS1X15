@@ -212,11 +212,13 @@ public:
     writeRegister(RegisterAddress::LOTHRESH, 0x0000);
   }
 
-  bool conversionComplete() {
+  bool conversionComplete() 
+  {
     return (readRegister(RegisterAddress::CONFIG) & ADS1X15_REG_CONFIG_OS_NOTBUSY) != 0;
   }
 
-  int16_t getLastConversionResults() {
+  int16_t getLastConversionResults() 
+  {
     // Read the conversion results
     uint16_t res = readRegister(RegisterAddress::CONVERSION) >> _bitshift;
     if (_bitshift == 0) {
@@ -232,7 +234,7 @@ public:
     }
   }
 
-  float computeVolts(int16_t count) 
+  float computeVolts(int16_t count) const
   { 
     float range;
     switch (_gain) {
