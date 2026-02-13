@@ -1,14 +1,13 @@
+#include "ADS1X15.h"
 #include <Arduino.h>
 #include <Wire.h>
-#include "ADS1X15.h"
 
 using namespace ADS1X15;
 
 ADS1015<TwoWire> ads(Wire); /* Use this for the 12-bit version */
-//ADS1115<TwoWire> ads(Wire); /* Use this for the 16-bit version */  
+// ADS1115<TwoWire> ads(Wire); /* Use this for the 16-bit version */
 
-void setup(void)
-{
+void setup(void) {
   Serial.begin(9600);
   Serial.println("Hello!");
 
@@ -34,13 +33,13 @@ void setup(void)
   ads.startComparatorSingleEnded(0, 1000);
 }
 
-void loop(void)
-{
+void loop(void) {
   int16_t adc0;
 
   // Comparator will only de-assert after a read
   adc0 = ads.getLastConversionResults();
-  Serial.print("AIN0: "); Serial.println(adc0);
+  Serial.print("AIN0: ");
+  Serial.println(adc0);
 
   delay(100);
 }
