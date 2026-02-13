@@ -152,7 +152,6 @@ template <typename WIRE> class ADS1X15 {
                       ADS1X15_REG_CONFIG_CLAT_LATCH |   // Latching mode
                       ADS1X15_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
                       ADS1X15_REG_CONFIG_CMODE_TRAD |   // Traditional comparator (default val)
-                      ADS1X15_REG_CONFIG_MODE_CONTIN |  // Continuous conversion mode
                       ADS1X15_REG_CONFIG_MODE_CONTIN;   // Continuous conversion mode
 
     // Set PGA/voltage range
