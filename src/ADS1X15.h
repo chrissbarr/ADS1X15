@@ -145,12 +145,13 @@ template <typename WIRE> class ADS1X15 {
   }
 
   void startComparatorSingleEnded(uint8_t channel, int16_t threshold) {
+    if (channel > 3) { return; }
+
     // Start with default values
     uint16_t config = ADS1X15_REG_CONFIG_CQUE_1CONV |   // Comparator enabled and asserts on 1 match
                       ADS1X15_REG_CONFIG_CLAT_LATCH |   // Latching mode
                       ADS1X15_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
                       ADS1X15_REG_CONFIG_CMODE_TRAD |   // Traditional comparator (default val)
-                      ADS1X15_REG_CONFIG_MODE_CONTIN |  // Continuous conversion mode
                       ADS1X15_REG_CONFIG_MODE_CONTIN;   // Continuous conversion mode
 
     // Set PGA/voltage range
@@ -161,9 +162,11 @@ template <typename WIRE> class ADS1X15 {
 
     config |= MUX_BY_CHANNEL[channel];
 
-    // Set the high threshold register
-    // Shift 12-bit results left 4 bits for the ADS1015
-    writeRegister(RegisterAddress::HITHRESH, threshold << _bitshift);
+    // Set threshold registers before starting conversion.
+    // LOTHRESH = chip default (0x8000); comparator deasserts only via latch clear.
+    // Shift 12-bit results left 4 bits for the ADS1015.
+    writeRegister(RegisterAddress::LOTHRESH, 0x8000);
+    writeRegister(RegisterAddress::HITHRESH, static_cast<uint16_t>(threshold) << _bitshift);
 
     // Write config register to the ADC
     writeRegister(RegisterAddress::CONFIG, config);
@@ -195,12 +198,12 @@ template <typename WIRE> class ADS1X15 {
     // Set 'start single-conversion' bit
     config |= ADS1X15_REG_CONFIG_OS_SINGLE;
 
-    // Write config register to the ADC
-    writeRegister(RegisterAddress::CONFIG, config);
-
-    // Set ALERT/RDY to RDY mode.
+    // Set ALERT/RDY to RDY mode (before starting conversion).
     writeRegister(RegisterAddress::HITHRESH, 0x8000);
     writeRegister(RegisterAddress::LOTHRESH, 0x0000);
+
+    // Write config register to the ADC (starts conversion via OS=1).
+    writeRegister(RegisterAddress::CONFIG, config);
   }
 
   bool conversionComplete() { return (readRegister(RegisterAddress::CONFIG) & ADS1X15_REG_CONFIG_OS_NOTBUSY) != 0; }
