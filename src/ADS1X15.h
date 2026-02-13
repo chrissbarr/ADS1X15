@@ -105,8 +105,6 @@ constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_NONE =
 
 template <typename WIRE> class ADS1X15 {
   public:
-  ADS1X15(WIRE& wire) : mWire(wire) {};
-
   /**
    * Initializes the ADS1X15 given its HW address, see datasheet for address selection.
    * /param addr Address of ADS1X15 (0 - 3)
@@ -253,7 +251,13 @@ template <typename WIRE> class ADS1X15 {
   }
 
   protected:
-  uint8_t _i2caddr;
+  ADS1X15(WIRE& wire, uint8_t bitshift, Gain gain, Rate rate)
+      : mWire(wire),
+        _bitshift(bitshift),
+        _gain(gain),
+        _rate(rate) {};
+
+  uint8_t _i2caddr = ADS1X15_ADDRESS;
   WIRE& mWire;
   uint8_t _bitshift;
   Gain _gain;
@@ -279,20 +283,12 @@ template <typename WIRE> class ADS1X15 {
 
 template <typename WIRE> class ADS1015 : public ADS1X15<WIRE> {
   public:
-  ADS1015(WIRE& wire) : ADS1X15<WIRE>(wire) {
-    this->_bitshift = 4;
-    this->_gain     = Gain::TWOTHIRDS_6144MV;
-    this->_rate     = Rate::ADS1015_1600SPS;
-  };
+  ADS1015(WIRE& wire) : ADS1X15<WIRE>(wire, 4, Gain::TWOTHIRDS_6144MV, Rate::ADS1015_1600SPS) {};
 };
 
 template <typename WIRE> class ADS1115 : public ADS1X15<WIRE> {
   public:
-  ADS1115(WIRE& wire) : ADS1X15<WIRE>(wire) {
-    this->_bitshift = 0;
-    this->_gain     = Gain::TWOTHIRDS_6144MV;
-    this->_rate     = Rate::ADS1115_128SPS;
-  };
+  ADS1115(WIRE& wire) : ADS1X15<WIRE>(wire, 0, Gain::TWOTHIRDS_6144MV, Rate::ADS1115_128SPS) {};
 };
 
 } // namespace ADS1X15
