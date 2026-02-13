@@ -145,6 +145,8 @@ template <typename WIRE> class ADS1X15 {
   }
 
   void startComparatorSingleEnded(uint8_t channel, int16_t threshold) {
+    if (channel > 3) { return; }
+
     // Start with default values
     uint16_t config = ADS1X15_REG_CONFIG_CQUE_1CONV |   // Comparator enabled and asserts on 1 match
                       ADS1X15_REG_CONFIG_CLAT_LATCH |   // Latching mode
