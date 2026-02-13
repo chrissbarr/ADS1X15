@@ -24,7 +24,7 @@ void setup(void) {
   Serial.begin(9600);
   Serial.println("Hello!");
 
-  Serial.println("Getting single-ended readings from AIN0..3");
+  Serial.println("Getting continuous readings from AIN0");
   Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
 
   ads.begin();
@@ -49,7 +49,7 @@ void loop(void) {
   Serial.print(results);
   Serial.print("(");
   Serial.print(ads.computeVolts(results));
-  Serial.println("mV)");
+  Serial.println("V)");
 
   new_data = false;
 
