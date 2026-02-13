@@ -108,8 +108,8 @@ template <typename WIRE> class ADS1X15 {
   ADS1X15(WIRE& wire) : mWire(wire) {};
 
   /**
-   * Initializes the PCAL9535A given its HW address, see datasheet for address selection.
-   * /param addr Address of PCAL9535A (0 - 7)
+   * Initializes the ADS1X15 given its HW address, see datasheet for address selection.
+   * /param addr Address of ADS1X15 (0 - 3)
    */
   void begin(uint8_t address = ADS1X15_ADDRESS) {
     _i2caddr = address;
