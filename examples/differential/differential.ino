@@ -1,14 +1,13 @@
+#include "ADS1X15.h"
 #include <Arduino.h>
 #include <Wire.h>
-#include "ADS1X15.h"
 
 using namespace ADS1X15;
 
 ADS1015<TwoWire> ads(Wire); /* Use this for the 12-bit version */
-//ADS1115<TwoWire> ads(Wire); /* Use this for the 16-bit version */  
+// ADS1115<TwoWire> ads(Wire); /* Use this for the 16-bit version */
 
-void setup(void)
-{
+void setup(void) {
   Serial.begin(9600);
   Serial.println("Hello!");
 
@@ -32,17 +31,20 @@ void setup(void)
   ads.setGain(Gain::TWOTHIRDS_6144MV);
 }
 
-void loop(void)
-{
+void loop(void) {
   int16_t results;
 
   /* Be sure to update this value based on the IC and the gain settings! */
-  float   multiplier = 3.0F;    /* ADS1015 @ +/- 6.144V gain (12-bit results) */
-  //float multiplier = 0.1875F; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
+  float multiplier = 3.0F; /* ADS1015 @ +/- 6.144V gain (12-bit results) */
+  // float multiplier = 0.1875F; /* ADS1115  @ +/- 6.144V gain (16-bit results) */
 
   results = ads.readADCDifferential(DifferentialPair::PAIR_01);
 
-  Serial.print("Differential: "); Serial.print(results); Serial.print("("); Serial.print(results * multiplier); Serial.println("mV)");
+  Serial.print("Differential: ");
+  Serial.print(results);
+  Serial.print("(");
+  Serial.print(results * multiplier);
+  Serial.println("mV)");
 
   delay(1000);
 }

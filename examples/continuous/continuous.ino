@@ -1,11 +1,11 @@
+#include "ADS1X15.h"
 #include <Arduino.h>
 #include <Wire.h>
-#include "ADS1X15.h"
 
 using namespace ADS1X15;
 
 ADS1015<TwoWire> ads(Wire); /* Use this for the 12-bit version */
-//ADS1115<TwoWire> ads(Wire); /* Use this for the 16-bit version */  
+// ADS1115<TwoWire> ads(Wire); /* Use this for the 16-bit version */
 
 // Pin connected to the ALERT/RDY signal for new sample notification.
 constexpr int READY_PIN = 3;
@@ -18,12 +18,9 @@ constexpr int READY_PIN = 3;
 #endif
 
 volatile bool new_data = false;
-void IRAM_ATTR NewDataReadyISR() {
-  new_data = true;
-}
+void IRAM_ATTR NewDataReadyISR() { new_data = true; }
 
-void setup(void)
-{
+void setup(void) {
   Serial.begin(9600);
   Serial.println("Hello!");
 
@@ -42,20 +39,21 @@ void setup(void)
   ads.startADCReading(ADS1X15_REG_CONFIG_MUX_SINGLE_0, /*continuous=*/true);
 }
 
-void loop(void)
-{
+void loop(void) {
   // If we don't have new data, skip this iteration.
-  if (!new_data) {
-    return;
-  }
+  if (!new_data) { return; }
 
   int16_t results = ads.getLastConversionResults();
 
-  Serial.print("AIN0: "); Serial.print(results); Serial.print("("); Serial.print(ads.computeVolts(results)); Serial.println("mV)");
+  Serial.print("AIN0: ");
+  Serial.print(results);
+  Serial.print("(");
+  Serial.print(ads.computeVolts(results));
+  Serial.println("mV)");
 
   new_data = false;
 
-  // In a real application we probably don't want to do a delay here if we are doing interrupt-based sampling, but we have a delay
-  // in this example to avoid writing too much data to the serial port.
+  // In a real application we probably don't want to do a delay here if we are doing interrupt-based sampling, but we
+  // have a delay in this example to avoid writing too much data to the serial port.
   delay(1000);
 }
