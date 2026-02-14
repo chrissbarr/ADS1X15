@@ -29,12 +29,13 @@ GENERATE_XML           = NO
 GENERATE_DOCBOOK       = NO
 GENERATE_AUTOGEN_DEF   = NO
 GENERATE_PERLMOD       = NO
+XML_PROGRAMLISTING     = NO
 
 #---------------------------------------------------------------------------
 # Warning configuration - STRICT mode for complete validation
 #---------------------------------------------------------------------------
 
-QUIET                  = NO
+QUIET                  = YES
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
@@ -70,6 +71,12 @@ EXTRACT_ANON_NSPACES   = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_SCOPE_NAMES       = NO
+
+#---------------------------------------------------------------------------
+# Comment parsing
+#---------------------------------------------------------------------------
+
+JAVADOC_AUTOBRIEF      = YES
 
 #---------------------------------------------------------------------------
 # Language optimization

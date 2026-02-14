@@ -6,7 +6,6 @@ RUN sudo apt-get update \
  && sudo apt-get -y install --no-install-recommends \
       software-properties-common \
       clang \
-      doxygen \
       python3-venv \
       udev \
       wget
@@ -14,6 +13,14 @@ RUN sudo apt-get update \
 RUN wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- 21
 RUN apt-get update && apt-get install -y clang-format-21
 RUN ln -s /usr/bin/clang-format-21 /usr/bin/clang-format
+
+## Install Doxygen 1.16.1
+## The apt repository only has 1.9.4 which has false positive warnings for template classes
+RUN cd /tmp \
+ && wget -q https://github.com/doxygen/doxygen/releases/download/Release_1_16_1/doxygen-1.16.1.linux.bin.tar.gz \
+ && tar -xzf doxygen-1.16.1.linux.bin.tar.gz \
+ && sudo cp doxygen-1.16.1/bin/doxygen /usr/local/bin/doxygen \
+ && rm -rf doxygen-*
 
 ## Set up udev rules for PlatformIO
 RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
