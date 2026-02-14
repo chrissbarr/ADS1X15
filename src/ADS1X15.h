@@ -224,6 +224,34 @@ template <typename WIRE> class ADS1X15 {
     return count * (range / (32768 >> _bitshift));
   }
 
+  int16_t computeCount(float volts) const {
+    float range;
+    switch (_gain) {
+    case Gain::TWOTHIRDS_6144MV:
+      range = 6.144;
+      break;
+    case Gain::ONE_4096MV:
+      range = 4.096;
+      break;
+    case Gain::TWO_2048MV:
+      range = 2.048;
+      break;
+    case Gain::FOUR_1024MV:
+      range = 1.024;
+      break;
+    case Gain::EIGHT_512MV:
+      range = 0.512;
+      break;
+    case Gain::SIXTEEN_256MV:
+      range = 0.256;
+      break;
+    default:
+      range = 0.0;
+      break;
+    }
+    return int16_t(volts * (32768 >> _bitshift) / range);
+  }
+
   protected:
   ADS1X15(WIRE& wire, uint8_t bitshift, Gain gain, Rate rate)
       : mWire(wire),

@@ -13,7 +13,7 @@ void setup(void) {
 
   Serial.println("Single-ended readings from AIN0 with >3.0V comparator");
   Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
-  Serial.println("Comparator Threshold: 1000 (3.000V)");
+  Serial.println("Comparator Threshold: 3.000V");
 
   // The ADC input range (or gain) can be changed via the following
   // functions, but be careful never to exceed VDD +0.3V max, or to
@@ -30,7 +30,7 @@ void setup(void) {
 
   ads.begin();
   // Setup 3V comparator on channel 0
-  ads.startComparatorSingleEnded(0, 1000);
+  ads.startComparatorSingleEnded(0, ads.computeCount(3.0));
 }
 
 void loop(void) {
