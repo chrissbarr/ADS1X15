@@ -36,7 +36,7 @@ void setup(void) {
   attachInterrupt(digitalPinToInterrupt(READY_PIN), NewDataReadyISR, FALLING);
 
   // Start continuous conversions.
-  ads.startADCReading(ADS1X15_REG_CONFIG_MUX_SINGLE_0, /*continuous=*/true);
+  ads.startSingleEndedReading(0, /*continuous=*/true);
 }
 
 void loop(void) {
