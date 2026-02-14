@@ -64,6 +64,7 @@ All enums are in the `ADS1X15` namespace.
 
 **Utility**
 - `float computeVolts(int16_t count) const` — Convert a raw ADC count to voltage.
+- `int16_t computeCount(float volts) const` — Convert a voltage to a raw ADC count (inverse of `computeVolts`). Useful for computing comparator thresholds.
 
 ## Installation
 
@@ -203,7 +204,7 @@ See the [continuous](examples/continuous) example for a complete implementation 
 Set up a hardware comparator to assert the ALRT pin when a threshold is exceeded:
 
 ```cpp
-ads.startComparatorSingleEnded(0, 1000);  // Channel 0, threshold ~3.0V
+ads.startComparatorSingleEnded(0, ads.computeCount(3.0));  // Channel 0, threshold 3.0V
 
 // In loop — reading the result de-asserts the alert:
 int16_t result = ads.getLastConversionResults();
