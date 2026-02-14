@@ -7,7 +7,6 @@
 #ifndef _ADS1X15_H_
 #define _ADS1X15_H_
 
-#include <Arduino.h>
 #include <stdint.h>
 
 namespace ADS1X15 {
