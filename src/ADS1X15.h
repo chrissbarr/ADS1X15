@@ -259,7 +259,7 @@ template <typename WIRE> class ADS1X15 {
     config |= static_cast<uint16_t>(_rate);
 
     // Set channels
-    config |= mux;
+    config |= mux & ADS1X15_REG_CONFIG_MUX_MASK;
 
     // Set 'start single-conversion' bit
     config |= ADS1X15_REG_CONFIG_OS_SINGLE;
