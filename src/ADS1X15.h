@@ -122,7 +122,7 @@ template <typename WIRE> class ADS1X15 {
   int16_t readADCSingleEnded(uint8_t channel) {
     if (channel > 3) { return 0; }
 
-    startADCReading(MUX_BY_CHANNEL[channel], /*continuous=*/false);
+    startSingleEndedReading(channel, /*continuous=*/false);
 
     // Wait for the conversion to complete
     while (!conversionComplete());
@@ -131,14 +131,23 @@ template <typename WIRE> class ADS1X15 {
     return getLastConversionResults();
   }
 
+  void startSingleEndedReading(uint8_t channel, bool continuous) {
+    if (channel > 3) { return; }
+    startADCReading(MUX_BY_CHANNEL[channel], continuous);
+  }
+
   int16_t readADCDifferential(DifferentialPair pair) {
-    startADCReading(static_cast<uint16_t>(pair), /*continuous=*/false);
+    startDifferentialReading(pair, /*continuous=*/false);
 
     // Wait for the conversion to complete
     while (!conversionComplete());
 
     // Read the conversion results
     return getLastConversionResults();
+  }
+
+  void startDifferentialReading(DifferentialPair pair, bool continuous) {
+    startADCReading(static_cast<uint16_t>(pair), continuous);
   }
 
   void startComparatorSingleEnded(uint8_t channel, int16_t threshold) {
@@ -166,40 +175,6 @@ template <typename WIRE> class ADS1X15 {
     writeRegister(RegisterAddress::HITHRESH, static_cast<uint16_t>(threshold) << _bitshift);
 
     // Write config register to the ADC
-    writeRegister(RegisterAddress::CONFIG, config);
-  }
-
-  void startADCReading(uint16_t mux, bool continuous) {
-    // Start with default values
-    uint16_t config = ADS1X15_REG_CONFIG_CQUE_1CONV |   // Set CQUE to any value other than
-                                                        // None so we can use it in RDY mode
-                      ADS1X15_REG_CONFIG_CLAT_NONLAT |  // Non-latching (default val)
-                      ADS1X15_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
-                      ADS1X15_REG_CONFIG_CMODE_TRAD;    // Traditional comparator (default val)
-
-    if (continuous) {
-      config |= ADS1X15_REG_CONFIG_MODE_CONTIN;
-    } else {
-      config |= ADS1X15_REG_CONFIG_MODE_SINGLE;
-    }
-
-    // Set PGA/voltage range
-    config |= static_cast<uint16_t>(_gain);
-
-    // Set data rate
-    config |= static_cast<uint16_t>(_rate);
-
-    // Set channels
-    config |= mux;
-
-    // Set 'start single-conversion' bit
-    config |= ADS1X15_REG_CONFIG_OS_SINGLE;
-
-    // Set ALERT/RDY to RDY mode (before starting conversion).
-    writeRegister(RegisterAddress::HITHRESH, 0x8000);
-    writeRegister(RegisterAddress::LOTHRESH, 0x0000);
-
-    // Write config register to the ADC (starts conversion via OS=1).
     writeRegister(RegisterAddress::CONFIG, config);
   }
 
@@ -263,6 +238,40 @@ template <typename WIRE> class ADS1X15 {
   Rate _rate;
 
   private:
+  void startADCReading(uint16_t mux, bool continuous) {
+    // Start with default values
+    uint16_t config = ADS1X15_REG_CONFIG_CQUE_1CONV |   // Set CQUE to any value other than
+                                                        // None so we can use it in RDY mode
+                      ADS1X15_REG_CONFIG_CLAT_NONLAT |  // Non-latching (default val)
+                      ADS1X15_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
+                      ADS1X15_REG_CONFIG_CMODE_TRAD;    // Traditional comparator (default val)
+
+    if (continuous) {
+      config |= ADS1X15_REG_CONFIG_MODE_CONTIN;
+    } else {
+      config |= ADS1X15_REG_CONFIG_MODE_SINGLE;
+    }
+
+    // Set PGA/voltage range
+    config |= static_cast<uint16_t>(_gain);
+
+    // Set data rate
+    config |= static_cast<uint16_t>(_rate);
+
+    // Set channels
+    config |= mux;
+
+    // Set 'start single-conversion' bit
+    config |= ADS1X15_REG_CONFIG_OS_SINGLE;
+
+    // Set ALERT/RDY to RDY mode (before starting conversion).
+    writeRegister(RegisterAddress::HITHRESH, 0x8000);
+    writeRegister(RegisterAddress::LOTHRESH, 0x0000);
+
+    // Write config register to the ADC (starts conversion via OS=1).
+    writeRegister(RegisterAddress::CONFIG, config);
+  }
+
   void writeRegister(RegisterAddress reg, uint16_t value) {
     mWire.beginTransmission(_i2caddr);
     mWire.write(static_cast<uint8_t>(reg));

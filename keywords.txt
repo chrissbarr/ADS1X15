@@ -21,7 +21,8 @@ getDataRate	KEYWORD2
 readADCSingleEnded	KEYWORD2
 readADCDifferential	KEYWORD2
 startComparatorSingleEnded	KEYWORD2
-startADCReading	KEYWORD2
+startSingleEndedReading	KEYWORD2
+startDifferentialReading	KEYWORD2
 conversionComplete	KEYWORD2
 getLastConversionResults	KEYWORD2
 computeVolts	KEYWORD2

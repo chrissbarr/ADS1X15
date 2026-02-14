@@ -54,7 +54,8 @@ All enums are in the `ADS1X15` namespace.
 - `int16_t readADCDifferential(DifferentialPair pair)` — Read a differential pair. Blocks until conversion completes.
 
 **Non-Blocking ADC Reads**
-- `void startADCReading(uint16_t mux, bool continuous)` — Start a single or continuous conversion.
+- `void startSingleEndedReading(uint8_t channel, bool continuous)` — Start a single-ended conversion on a channel (0–3).
+- `void startDifferentialReading(DifferentialPair pair, bool continuous)` — Start a differential conversion on a pair.
 - `bool conversionComplete()` — Check if a conversion has finished.
 - `int16_t getLastConversionResults()` — Retrieve the result of the last conversion.
 
@@ -187,7 +188,7 @@ Available pairs: `PAIR_01` (AIN0–AIN1), `PAIR_03` (AIN0–AIN3), `PAIR_13` (AI
 Start a conversion and poll for completion without blocking:
 
 ```cpp
-ads.startADCReading(ADS1X15_REG_CONFIG_MUX_SINGLE_0, true);
+ads.startSingleEndedReading(0, true);
 
 // Later, in loop:
 if (ads.conversionComplete()) {
