@@ -1,1 +1,6 @@
 .pio
+
+# Doxygen generated files
+doxy.warn
+docs/html/
+docs/latex/
