@@ -102,23 +102,43 @@ constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_4CONV = 0x0002; ///< Assert ALERT/RDY
 constexpr uint16_t ADS1X15_REG_CONFIG_CQUE_NONE =
     0x0003; ///< Disable the comparator and put ALERT/RDY in high state (default)
 
+/**
+ * \brief Base class for ADS1015 and ADS1115 ADC chips.
+ *
+ * Templated on WIRE type to support both hardware I2C (Wire) and software I2C implementations.
+ * This class provides all core functionality for reading ADC values, configuring gain and data rate,
+ * and managing comparator operations.
+ *
+ * \tparam WIRE I2C interface type (e.g., TwoWire, AceWire, SoftwareWire)
+ */
 template <typename WIRE> class ADS1X15 {
   public:
-  /**
-   * Initializes the ADS1X15 given its HW address, see datasheet for address selection.
-   * /param addr Address of ADS1X15 (0 - 3)
-   */
+  /** \brief Initialises the ADS1X15 given its HW address.
+   *  \param address I2C address of ADS1X15 (default: 0x48) */
   void begin(uint8_t address = ADS1X15_ADDRESS) {
     _i2caddr = address;
     mWire.begin();
   }
 
+  /** \brief Sets the programmable gain amplifier (PGA) gain.
+   *  \param gain Gain setting (e.g., TWOTHIRDS_6144MV, ONE_4096MV, etc.) */
   void setGain(Gain gain) { _gain = gain; }
+
+  /** \brief Gets the current gain setting.
+   *  \return Current Gain value */
   Gain getGain() const { return _gain; }
 
+  /** \brief Sets the data rate (samples per second).
+   *  \param rate Data rate setting */
   void setDataRate(Rate rate) { _rate = rate; }
+
+  /** \brief Gets the current data rate setting.
+   *  \return Current Rate value */
   Rate getDataRate() const { return _rate; }
 
+  /** \brief Reads a single-ended ADC channel (blocking).
+   *  \param channel ADC channel to read (0-3)
+   *  \return ADC conversion result (12-bit for ADS1015, 16-bit for ADS1115) */
   int16_t readADCSingleEnded(uint8_t channel) {
     if (channel > 3) { return 0; }
 
@@ -131,11 +151,17 @@ template <typename WIRE> class ADS1X15 {
     return getLastConversionResults();
   }
 
+  /** \brief Starts a single-ended ADC reading (non-blocking).
+   *  \param channel ADC channel to read (0-3)
+   *  \param continuous If true, enables continuous conversion mode; if false, single-shot mode */
   void startSingleEndedReading(uint8_t channel, bool continuous) {
     if (channel > 3) { return; }
     startADCReading(MUX_BY_CHANNEL[channel], continuous);
   }
 
+  /** \brief Reads a differential ADC pair (blocking).
+   *  \param pair Differential input pair (e.g., PAIR_01 for AIN0-AIN1)
+   *  \return ADC conversion result (12-bit for ADS1015, 16-bit for ADS1115) */
   int16_t readADCDifferential(DifferentialPair pair) {
     startDifferentialReading(pair, /*continuous=*/false);
 
@@ -146,10 +172,16 @@ template <typename WIRE> class ADS1X15 {
     return getLastConversionResults();
   }
 
+  /** \brief Starts a differential ADC reading (non-blocking).
+   *  \param pair Differential input pair (e.g., PAIR_01 for AIN0-AIN1)
+   *  \param continuous If true, enables continuous conversion mode; if false, single-shot mode */
   void startDifferentialReading(DifferentialPair pair, bool continuous) {
     startADCReading(static_cast<uint16_t>(pair), continuous);
   }
 
+  /** \brief Starts the comparator in continuous mode on a single-ended channel.
+   *  \param channel ADC channel to monitor (0-3)
+   *  \param threshold High threshold value for comparator (in ADC counts) */
   void startComparatorSingleEnded(uint8_t channel, int16_t threshold) {
     if (channel > 3) { return; }
 
@@ -178,8 +210,12 @@ template <typename WIRE> class ADS1X15 {
     writeRegister(RegisterAddress::CONFIG, config);
   }
 
+  /** \brief Checks if an ADC conversion has completed.
+   *  \return true if conversion is complete, false if still in progress */
   bool conversionComplete() { return (readRegister(RegisterAddress::CONFIG) & ADS1X15_REG_CONFIG_OS_NOTBUSY) != 0; }
 
+  /** \brief Retrieves the last ADC conversion result.
+   *  \return ADC conversion result (signed 16-bit value) */
   int16_t getLastConversionResults() {
     // Read the conversion results
     uint16_t res = readRegister(RegisterAddress::CONVERSION) >> _bitshift;
@@ -196,6 +232,9 @@ template <typename WIRE> class ADS1X15 {
     }
   }
 
+  /** \brief Converts ADC count value to volts.
+   *  \param count ADC count value to convert
+   *  \return Voltage in volts */
   float computeVolts(int16_t count) const {
     float range;
     switch (_gain) {
@@ -224,6 +263,9 @@ template <typename WIRE> class ADS1X15 {
     return count * (range / (32768 >> _bitshift));
   }
 
+  /** \brief Converts volts to ADC count value.
+   *  \param volts Voltage to convert
+   *  \return ADC count value */
   int16_t computeCount(float volts) const {
     float range;
     switch (_gain) {
@@ -253,17 +295,22 @@ template <typename WIRE> class ADS1X15 {
   }
 
   protected:
+  /** \brief Protected constructor for derived classes.
+   *  \param wire Reference to I2C interface object
+   *  \param bitshift Number of bits to shift (4 for ADS1015, 0 for ADS1115)
+   *  \param gain Default gain setting
+   *  \param rate Default data rate setting */
   ADS1X15(WIRE& wire, uint8_t bitshift, Gain gain, Rate rate)
       : mWire(wire),
         _bitshift(bitshift),
         _gain(gain),
         _rate(rate) {};
 
-  uint8_t _i2caddr = ADS1X15_ADDRESS;
-  WIRE& mWire;
-  uint8_t _bitshift;
-  Gain _gain;
-  Rate _rate;
+  uint8_t _i2caddr = ADS1X15_ADDRESS; ///< I2C address
+  WIRE& mWire;                        ///< Reference to I2C interface
+  uint8_t _bitshift;                  ///< Number of bits to shift raw ADC value
+  Gain _gain;                         ///< Current gain setting
+  Rate _rate;                         ///< Current data rate setting
 
   private:
   void startADCReading(uint16_t mux, bool continuous) {
@@ -317,13 +364,33 @@ template <typename WIRE> class ADS1X15 {
   }
 };
 
+/**
+ * \brief Driver for the ADS1015 12-bit ADC.
+ *
+ * The ADS1015 is a 12-bit precision ADC with an I2C interface. This class sets
+ * the appropriate bit shift (4) and default data rate (1600 SPS) for the ADS1015.
+ *
+ * \tparam WIRE I2C interface type (e.g., TwoWire, AceWire, SoftwareWire)
+ */
 template <typename WIRE> class ADS1015 : public ADS1X15<WIRE> {
   public:
+  /** \brief Constructs an ADS1015 instance.
+   *  \param wire Reference to I2C interface object */
   ADS1015(WIRE& wire) : ADS1X15<WIRE>(wire, 4, Gain::TWOTHIRDS_6144MV, Rate::ADS1015_1600SPS) {};
 };
 
+/**
+ * \brief Driver for the ADS1115 16-bit ADC.
+ *
+ * The ADS1115 is a 16-bit precision ADC with an I2C interface. This class sets
+ * the appropriate bit shift (0) and default data rate (128 SPS) for the ADS1115.
+ *
+ * \tparam WIRE I2C interface type (e.g., TwoWire, AceWire, SoftwareWire)
+ */
 template <typename WIRE> class ADS1115 : public ADS1X15<WIRE> {
   public:
+  /** \brief Constructs an ADS1115 instance.
+   *  \param wire Reference to I2C interface object */
   ADS1115(WIRE& wire) : ADS1X15<WIRE>(wire, 0, Gain::TWOTHIRDS_6144MV, Rate::ADS1115_128SPS) {};
 };
 
