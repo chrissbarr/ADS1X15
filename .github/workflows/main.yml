@@ -2,6 +2,7 @@ name: PlatformIO CI
 
 on:
   push:
+  workflow_call:
   schedule:
     - cron: '0 0 * * *'
 

@@ -8,8 +8,14 @@ permissions:
   contents: read
 
 jobs:
+  ci:
+    if: github.event.release.target_commitish == 'master'
+    uses: ./.github/workflows/main.yml
+
   publish:
+    needs: ci
     runs-on: ubuntu-latest
+    environment: platformio-registry
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
