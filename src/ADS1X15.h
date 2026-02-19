@@ -360,7 +360,9 @@ template <typename WIRE> class ADS1X15 {
     mWire.write(static_cast<uint8_t>(reg));
     mWire.endTransmission();
     mWire.requestFrom(_i2caddr, uint8_t(2));
-    return ((mWire.read() << 8) | mWire.read());
+    uint8_t hi = mWire.read();
+    uint8_t lo = mWire.read();
+    return static_cast<uint16_t>(static_cast<uint16_t>(hi) << 8 | lo);
   }
 };
 
