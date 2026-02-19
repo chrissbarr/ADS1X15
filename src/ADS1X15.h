@@ -235,64 +235,12 @@ template <typename WIRE> class ADS1X15 {
   /** \brief Converts ADC count value to volts.
    *  \param count ADC count value to convert
    *  \return Voltage in volts */
-  float computeVolts(int16_t count) const {
-    float range;
-    switch (_gain) {
-    case Gain::TWOTHIRDS_6144MV:
-      range = 6.144;
-      break;
-    case Gain::ONE_4096MV:
-      range = 4.096;
-      break;
-    case Gain::TWO_2048MV:
-      range = 2.048;
-      break;
-    case Gain::FOUR_1024MV:
-      range = 1.024;
-      break;
-    case Gain::EIGHT_512MV:
-      range = 0.512;
-      break;
-    case Gain::SIXTEEN_256MV:
-      range = 0.256;
-      break;
-    default:
-      range = 0.0;
-      break;
-    }
-    return count * (range / (32768 >> _bitshift));
-  }
+  float computeVolts(int16_t count) const { return count * (gainToRange() / (32768 >> _bitshift)); }
 
   /** \brief Converts volts to ADC count value.
    *  \param volts Voltage to convert
    *  \return ADC count value */
-  int16_t computeCount(float volts) const {
-    float range;
-    switch (_gain) {
-    case Gain::TWOTHIRDS_6144MV:
-      range = 6.144;
-      break;
-    case Gain::ONE_4096MV:
-      range = 4.096;
-      break;
-    case Gain::TWO_2048MV:
-      range = 2.048;
-      break;
-    case Gain::FOUR_1024MV:
-      range = 1.024;
-      break;
-    case Gain::EIGHT_512MV:
-      range = 0.512;
-      break;
-    case Gain::SIXTEEN_256MV:
-      range = 0.256;
-      break;
-    default:
-      range = 0.0;
-      break;
-    }
-    return int16_t(volts * (32768 >> _bitshift) / range);
-  }
+  int16_t computeCount(float volts) const { return int16_t(volts * (32768 >> _bitshift) / gainToRange()); }
 
   protected:
   /** \brief Protected constructor for derived classes.
@@ -313,6 +261,27 @@ template <typename WIRE> class ADS1X15 {
   Rate _rate;                         ///< Current data rate setting
 
   private:
+  /** \brief Returns the PGA full-scale range in volts for the current gain setting.
+   *  \return Full-scale voltage range */
+  float gainToRange() const {
+    switch (_gain) {
+    case Gain::TWOTHIRDS_6144MV:
+      return 6.144;
+    case Gain::ONE_4096MV:
+      return 4.096;
+    case Gain::TWO_2048MV:
+      return 2.048;
+    case Gain::FOUR_1024MV:
+      return 1.024;
+    case Gain::EIGHT_512MV:
+      return 0.512;
+    case Gain::SIXTEEN_256MV:
+      return 0.256;
+    default:
+      return 2.048;
+    }
+  }
+
   void startADCReading(uint16_t mux, bool continuous) {
     // Start with default values
     uint16_t config = ADS1X15_REG_CONFIG_CQUE_1CONV |   // Set CQUE to any value other than
