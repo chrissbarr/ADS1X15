@@ -4,8 +4,8 @@
  Written by Chris Barr, 2022.
  ****************************************************/
 
-#ifndef _ADS1X15_H_
-#define _ADS1X15_H_
+#ifndef ADS1X15_H
+#define ADS1X15_H
 
 #include <stdint.h>
 
@@ -204,8 +204,8 @@ template <typename WIRE> class ADS1X15 {
     // LOTHRESH = chip default (0x8000); comparator deasserts only via latch clear.
     // Shift 12-bit results left 4 bits for the ADS1015.
     writeRegister(RegisterAddress::LOTHRESH, 0x8000);
-    int16_t maxThreshold = int16_t(32767 >> _bitshift);
-    int16_t minThreshold = int16_t(-(32768 >> _bitshift));
+    int16_t maxThreshold = static_cast<int16_t>(32767 >> _bitshift);
+    int16_t minThreshold = static_cast<int16_t>(-(32768 >> _bitshift));
     if (threshold > maxThreshold) { threshold = maxThreshold; }
     if (threshold < minThreshold) { threshold = minThreshold; }
     writeRegister(RegisterAddress::HITHRESH, static_cast<uint16_t>(threshold) << _bitshift);
@@ -224,7 +224,7 @@ template <typename WIRE> class ADS1X15 {
     // Read the conversion results
     uint16_t res = readRegister(RegisterAddress::CONVERSION) >> _bitshift;
     if (_bitshift == 0) {
-      return int16_t(res);
+      return static_cast<int16_t>(res);
     } else {
       // Shift 12-bit results right 4 bits for the ADS1015,
       // making sure we keep the sign bit intact
@@ -232,7 +232,7 @@ template <typename WIRE> class ADS1X15 {
         // negative number - extend the sign to 16th bit
         res |= 0xF000;
       }
-      return int16_t(res);
+      return static_cast<int16_t>(res);
     }
   }
 
@@ -248,7 +248,7 @@ template <typename WIRE> class ADS1X15 {
     float raw = volts * (32768 >> _bitshift) / gainToRange();
     if (raw > 32767.0f) { return 32767; }
     if (raw < -32768.0f) { return -32768; }
-    return int16_t(raw);
+    return static_cast<int16_t>(raw);
   }
 
   protected:
@@ -261,7 +261,7 @@ template <typename WIRE> class ADS1X15 {
       : mWire(wire),
         _bitshift(bitshift),
         _gain(gain),
-        _rate(rate) {};
+        _rate(rate) {}
 
   uint8_t _i2caddr = ADS1X15_ADDRESS; ///< I2C address
   WIRE& mWire;                        ///< Reference to I2C interface
@@ -337,7 +337,7 @@ template <typename WIRE> class ADS1X15 {
     mWire.beginTransmission(_i2caddr);
     mWire.write(static_cast<uint8_t>(reg));
     mWire.endTransmission();
-    mWire.requestFrom(_i2caddr, uint8_t(2));
+    mWire.requestFrom(_i2caddr, static_cast<uint8_t>(2));
     uint8_t hi = mWire.read();
     uint8_t lo = mWire.read();
     return static_cast<uint16_t>(static_cast<uint16_t>(hi) << 8 | lo);
@@ -356,7 +356,7 @@ template <typename WIRE> class ADS1015 : public ADS1X15<WIRE> {
   public:
   /** \brief Constructs an ADS1015 instance.
    *  \param wire Reference to I2C interface object */
-  ADS1015(WIRE& wire) : ADS1X15<WIRE>(wire, 4, Gain::TWOTHIRDS_6144MV, Rate::ADS1015_1600SPS) {};
+  ADS1015(WIRE& wire) : ADS1X15<WIRE>(wire, 4, Gain::TWOTHIRDS_6144MV, Rate::ADS1015_1600SPS) {}
 };
 
 /**
@@ -371,9 +371,9 @@ template <typename WIRE> class ADS1115 : public ADS1X15<WIRE> {
   public:
   /** \brief Constructs an ADS1115 instance.
    *  \param wire Reference to I2C interface object */
-  ADS1115(WIRE& wire) : ADS1X15<WIRE>(wire, 0, Gain::TWOTHIRDS_6144MV, Rate::ADS1115_128SPS) {};
+  ADS1115(WIRE& wire) : ADS1X15<WIRE>(wire, 0, Gain::TWOTHIRDS_6144MV, Rate::ADS1115_128SPS) {}
 };
 
 } // namespace ADS1X15
 
-#endif
+#endif // ADS1X15_H
