@@ -261,7 +261,7 @@ template <typename WIRE> class ADS1X15 {
       : mWire(wire),
         _bitshift(bitshift),
         _gain(gain),
-        _rate(rate) {};
+        _rate(rate) {}
 
   uint8_t _i2caddr = ADS1X15_ADDRESS; ///< I2C address
   WIRE& mWire;                        ///< Reference to I2C interface
@@ -356,7 +356,7 @@ template <typename WIRE> class ADS1015 : public ADS1X15<WIRE> {
   public:
   /** \brief Constructs an ADS1015 instance.
    *  \param wire Reference to I2C interface object */
-  ADS1015(WIRE& wire) : ADS1X15<WIRE>(wire, 4, Gain::TWOTHIRDS_6144MV, Rate::ADS1015_1600SPS) {};
+  ADS1015(WIRE& wire) : ADS1X15<WIRE>(wire, 4, Gain::TWOTHIRDS_6144MV, Rate::ADS1015_1600SPS) {}
 };
 
 /**
@@ -371,7 +371,7 @@ template <typename WIRE> class ADS1115 : public ADS1X15<WIRE> {
   public:
   /** \brief Constructs an ADS1115 instance.
    *  \param wire Reference to I2C interface object */
-  ADS1115(WIRE& wire) : ADS1X15<WIRE>(wire, 0, Gain::TWOTHIRDS_6144MV, Rate::ADS1115_128SPS) {};
+  ADS1115(WIRE& wire) : ADS1X15<WIRE>(wire, 0, Gain::TWOTHIRDS_6144MV, Rate::ADS1115_128SPS) {}
 };
 
 } // namespace ADS1X15
