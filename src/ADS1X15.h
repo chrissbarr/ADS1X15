@@ -204,6 +204,10 @@ template <typename WIRE> class ADS1X15 {
     // LOTHRESH = chip default (0x8000); comparator deasserts only via latch clear.
     // Shift 12-bit results left 4 bits for the ADS1015.
     writeRegister(RegisterAddress::LOTHRESH, 0x8000);
+    int16_t maxThreshold = int16_t(32767 >> _bitshift);
+    int16_t minThreshold = int16_t(-(32768 >> _bitshift));
+    if (threshold > maxThreshold) { threshold = maxThreshold; }
+    if (threshold < minThreshold) { threshold = minThreshold; }
     writeRegister(RegisterAddress::HITHRESH, static_cast<uint16_t>(threshold) << _bitshift);
 
     // Write config register to the ADC
@@ -240,7 +244,12 @@ template <typename WIRE> class ADS1X15 {
   /** \brief Converts volts to ADC count value.
    *  \param volts Voltage to convert
    *  \return ADC count value */
-  int16_t computeCount(float volts) const { return int16_t(volts * (32768 >> _bitshift) / gainToRange()); }
+  int16_t computeCount(float volts) const {
+    float raw = volts * (32768 >> _bitshift) / gainToRange();
+    if (raw > 32767.0f) { return 32767; }
+    if (raw < -32768.0f) { return -32768; }
+    return int16_t(raw);
+  }
 
   protected:
   /** \brief Protected constructor for derived classes.
