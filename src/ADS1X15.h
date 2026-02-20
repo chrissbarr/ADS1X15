@@ -4,8 +4,8 @@
  Written by Chris Barr, 2022.
  ****************************************************/
 
-#ifndef _ADS1X15_H_
-#define _ADS1X15_H_
+#ifndef ADS1X15_H
+#define ADS1X15_H
 
 #include <cstdint>
 
@@ -376,4 +376,4 @@ template <typename WIRE> class ADS1115 : public ADS1X15<WIRE> {
 
 } // namespace ADS1X15
 
-#endif
+#endif // ADS1X15_H
