@@ -7,7 +7,7 @@
 #ifndef ADS1X15_H
 #define ADS1X15_H
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace ADS1X15 {
 
