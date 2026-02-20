@@ -128,13 +128,18 @@ TEST(ComputeCount, ADS1015_RoundTrip) {
     EXPECT_EQ(ads.computeCount(ads.computeVolts(0)), 0);
 }
 
-TEST(ComputeCount, ADS1115_FullScale_ShouldClamp) {
-    // BUG: 6.144 * (32768 / 6.144) = 32768.0, which overflows int16_t to -32768.
-    // Correct behavior: should clamp to 32767 (max positive 16-bit value).
+TEST(ComputeCount, ADS1115_PositiveOverflow_ShouldClamp) {
+    // 6.2V exceeds the 6.144V full-scale range. Clamps to 32767 (max int16_t).
     MockWire wire;
     ADS1X15::ADS1115<MockWire> ads(wire);
-    int16_t result = ads.computeCount(6.144f);
-    EXPECT_EQ(result, int16_t(32767));
+    EXPECT_EQ(ads.computeCount(6.2f), int16_t(32767));
+}
+
+TEST(ComputeCount, ADS1115_NegativeOverflow_ShouldClamp) {
+    // -6.2V exceeds the negative full-scale range. Clamps to -32768 (min int16_t).
+    MockWire wire;
+    ADS1X15::ADS1115<MockWire> ads(wire);
+    EXPECT_EQ(ads.computeCount(-6.2f), int16_t(-32768));
 }
 
 // ===========================================================================
@@ -418,11 +423,8 @@ TEST(Comparator, ADS1115_ThresholdNotShifted) {
 }
 
 TEST(Comparator, ADS1015_ThresholdOverflow_ShouldClamp) {
-    // BUG: threshold=2048 on ADS1015 overflows: 2048 << 4 = 0x8000, which the
-    // chip interprets as a large negative threshold. The comparator will never
-    // trigger as intended.
-    // Correct behavior: should clamp to the maximum valid ADS1015 threshold
-    // (2047), writing 2047 << 4 = 0x7FF0 to HITHRESH.
+    // threshold=2048 exceeds ADS1015 max (2047). Clamps to 2047,
+    // writing 2047 << 4 = 0x7FF0 to HITHRESH.
     MockWire wire;
     ADS1X15::ADS1015<MockWire> ads(wire);
     ads.begin();
@@ -430,6 +432,18 @@ TEST(Comparator, ADS1015_ThresholdOverflow_ShouldClamp) {
     ads.startComparatorSingleEnded(0, 2048);
     uint16_t hithresh = (static_cast<uint16_t>(wire.written[4]) << 8) | wire.written[5];
     EXPECT_EQ(hithresh, 0x7FF0);
+}
+
+TEST(Comparator, ADS1015_NegativeThresholdOverflow_ShouldClamp) {
+    // threshold=-2049 exceeds ADS1015 min (-2048). Clamps to -2048,
+    // writing -2048 << 4 = 0x8000 to HITHRESH.
+    MockWire wire;
+    ADS1X15::ADS1015<MockWire> ads(wire);
+    ads.begin();
+    wire.reset();
+    ads.startComparatorSingleEnded(0, -2049);
+    uint16_t hithresh = (static_cast<uint16_t>(wire.written[4]) << 8) | wire.written[5];
+    EXPECT_EQ(hithresh, 0x8000);
 }
 
 TEST(Comparator, InvalidChannel_NoI2C) {
